@@ -22,7 +22,6 @@ Ejecución: uv run 01_python_frameworks/deepagents_demo.py
 
 import os
 import json
-from typing import Any
 
 
 # ==========================================
@@ -178,7 +177,7 @@ def run_live_demo():
         elif kind == "on_chat_model_end":
             print("   [Stream] on_chat_model_end")
 
-    print(f"\n--- Paso 4: Resultado Final ---")
+    print("\n--- Paso 4: Resultado Final ---")
     print(f"   {final_response}\n")
 
 

@@ -257,7 +257,7 @@ def run_rag_demo():
     ]
     
     hit_rate, mrr = evaluate_retrieval_quality(ground_truth, retrieved_results, k=3)
-    print(f"Evaluated top 3 retrieved results across 3 test queries:")
+    print("Evaluated top 3 retrieved results across 3 test queries:")
     print(f"  Hit Rate @ 3: {hit_rate:.4f} (66.6% hit)")
     print(f"  MRR @ 3:      {mrr:.4f} (Average of [0.5, 1.0, 0.0] = 0.5)")
     

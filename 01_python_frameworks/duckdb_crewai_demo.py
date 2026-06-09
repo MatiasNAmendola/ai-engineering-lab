@@ -19,7 +19,6 @@ Ejecución: uv run 01_python_frameworks/duckdb_crewai_demo.py
 """
 
 import os
-import sys
 
 import duckdb
 

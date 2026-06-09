@@ -30,7 +30,7 @@ async function runDemo() {
   // 2. Intentamos cargar Flue dinámicamente (requiere node:sqlite)
   let flueAvailable = false;
   
-  try {
+try {
     const { createAgent } = await import('@flue/runtime');
     const { local } = await import('@flue/runtime/node');
     flueAvailable = true;
@@ -39,7 +39,7 @@ async function runDemo() {
 
     // 3. Definimos un agente usando createAgent de Flue
     // El inicializador recibe un contexto y retorna la configuración del runtime
-    const codeReviewAgent = createAgent(async (ctx) => {
+    createAgent(async (ctx) => {
       console.log(`   [Flue] Inicializando agente con payload: ${JSON.stringify(ctx.payload)}`);
       
       return {
@@ -50,7 +50,7 @@ async function runDemo() {
     });
 
     if (apiKey) {
-      console.log(`[Flue] API key detectada. Agente creado con createAgent(). (Existencia: ${!!codeReviewAgent})\n`);
+      console.log("[Flue] API key detectada. Agente creado con createAgent().\n");
       
       console.log("   Configuración del agente:");
       console.log("   - Modelo: google/gemini-1.5-flash");

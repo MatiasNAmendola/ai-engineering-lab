@@ -13,7 +13,7 @@ Demonstrates:
 
 import re
 import time
-from typing import Dict, Any, List, Callable, Optional
+from typing import List, Callable
 
 
 # --- 1. GOVERNANCE STATE & DATABASE ---
@@ -114,7 +114,7 @@ class ToolGater:
             # Check 5: Data Privacy / PII Filtering
             clean_args = self.policy.redact_pii(args)
             if clean_args != args:
-                print(f"  🔒 [PII GUARD] Intercepted sensitive input. Masked arguments sent to tool.")
+                print("  🔒 [PII GUARD] Intercepted sensitive input. Masked arguments sent to tool.")
 
             # Execute Tool (simulate cost logging)
             result = fn(clean_args)

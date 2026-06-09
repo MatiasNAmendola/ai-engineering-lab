@@ -67,15 +67,13 @@ import sys
 import json
 import math
 import uuid
-import asyncio
 from enum import Enum
 from datetime import datetime, timezone, timedelta
-from typing import Optional
 
 from pydantic import BaseModel, Field
 from sqlalchemy import (
     create_engine, Column, String, Float, DateTime, Boolean,
-    Integer, Enum as SAEnum, ForeignKey, Text, select, func, desc,
+    Enum as SAEnum, ForeignKey, Text, select, desc,
 )
 from sqlalchemy.orm import (
     DeclarativeBase, Session, relationship, sessionmaker,
@@ -899,14 +897,14 @@ def fraud_detection_agent():
     print("\n--- Paso 5: Análisis con IA ---")
     llm_response = _call_llm(
         "Sos un analista senior de fraude financiero. Respondé en español, conciso y profesional.",
-        f"Analizá este caso de fraude:\n"
-        f"- Usuario: María García (user-001)\n"
-        f"- Transacciones sospechosas: txn-004 ($185.000) y txn-005 ($95.000)\n"
-        f"- Risk scores: 0.85 y 0.92\n"
-        f"- Flags: geo_anomaly, high_amount, unknown_merchant, crypto_transaction, velocity_exceeded\n"
-        f"- Origen: IP 185.220.101.42, geolocalización Berlín (muy lejos de Buenos Aires)\n"
-        f"- Dispositivo: fingerprint nuevo, no visto antes\n"
-        f"¿Qué acciones adicionales recomendás más allá del bloqueo de tarjeta?",
+        "Analizá este caso de fraude:\n"
+        "- Usuario: María García (user-001)\n"
+        "- Transacciones sospechosas: txn-004 ($185.000) y txn-005 ($95.000)\n"
+        "- Risk scores: 0.85 y 0.92\n"
+        "- Flags: geo_anomaly, high_amount, unknown_merchant, crypto_transaction, velocity_exceeded\n"
+        "- Origen: IP 185.220.101.42, geolocalización Berlín (muy lejos de Buenos Aires)\n"
+        "- Dispositivo: fingerprint nuevo, no visto antes\n"
+        "¿Qué acciones adicionales recomendás más allá del bloqueo de tarjeta?",
     )
     if llm_response != "[LLM no disponible — modo mock]":
         print(f"   [Fraud Agent - LLM]:\n   {llm_response}")

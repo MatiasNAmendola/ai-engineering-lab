@@ -23,8 +23,6 @@ Ejecución: uv run 01_python_frameworks/duckdb_langgraph_demo.py
 """
 
 import os
-import json
-import math
 from typing import TypedDict, Annotated, Sequence
 import duckdb
 from langchain_core.messages import BaseMessage, HumanMessage, AIMessage, ToolMessage

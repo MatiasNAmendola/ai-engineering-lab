@@ -309,7 +309,7 @@ def run_mock_demo():
     print("[NOTA] No se encontró OPENAI_API_KEY. Ejecutando con SQLite real + LLM simulado.\n")
 
     print("--- Paso 1: Creación de base de datos SQLite ---")
-    conn = _get_db()
+    _get_db()
     print(f"  Base de datos creada en memoria con {DIM}-dimensional embeddings como BLOB.")
     print(f"  Equivalente PostgreSQL: tabla con columna VECTOR({DIM}) de pgvector.\n")
 

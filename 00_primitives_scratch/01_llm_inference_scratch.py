@@ -15,7 +15,7 @@ import os
 import time
 import urllib.request
 import urllib.error
-from typing import Generator, Dict, Any, Optional
+from typing import Generator, Dict, Any
 
 # --- MODEL PRICING CONFIGURATION (USD per 1M tokens) ---
 # Updated June 2026 - prices from official provider pages

@@ -13,7 +13,7 @@ Demonstrates:
 
 import time
 import uuid
-from typing import Dict, Any, List, Callable, Optional
+from typing import Dict, Any, List, Callable, Optional, Tuple
 
 
 # --- 1. CONTEXT PROPAGATION ENGINE ---
@@ -161,7 +161,7 @@ class AgentRuntime:
         print(f"\n[{self.name}] Initiating ReAct Loop for goal: '{user_goal}'")
         
         # Step 1: Reason / Check Long-term memory
-        print(f"  Thought 1: Check memory database for facts related to user request.")
+        print("  Thought 1: Check memory database for facts related to user request.")
         recall_fact = self.memory.recall("database")
         
         if recall_fact:
@@ -169,11 +169,11 @@ class AgentRuntime:
             # Act with retrieved fact
             action_args = f"db_uri=postgres://localhost:5432/prod, query='{recall_fact}'"
         else:
-            print(f"  Observation 1: No long-term memories found. Checking config system.")
+            print("  Observation 1: No long-term memories found. Checking config system.")
             action_args = "config_key=db_connection"
             
         # Step 2: Execute Action (Tool calling)
-        print(f"  Thought 2: Call 'fetch_database_config' to obtain connection string.")
+        print("  Thought 2: Call 'fetch_database_config' to obtain connection string.")
         tool_result = self.execute_tool_with_propagation("fetch_database_config", action_args, context)
         print(f"  Observation 2: Tool execution result: '{tool_result}'")
         

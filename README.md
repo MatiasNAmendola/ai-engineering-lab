@@ -1,5 +1,10 @@
 # Laboratorio de Ingeniería de IA (AI Engineering Lab): De Primitivas a Producción
 
+[![Python Version](https://img.shields.io/badge/python-3.11%20%7C%203.12-blue.svg)](https://www.python.org)
+[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+[![Local CI Check](https://img.shields.io/badge/local--CI-passing-success.svg)](./scripts/local_check.sh)
+[![Docker Support](https://img.shields.io/badge/docker-supported-blue.svg)](./docker-compose.yml)
+
 Bienvenido al **AI Engineering Lab**. Este repositorio está diseñado bajo una filosofía práctica y de primeros principios (*bottom-up*), inspirada en el estilo de enseñanza de Andrej Karpathy. Aquí implementamos las primitivas centrales de la Ingeniería de IA **desde cero**, utilizando código Python limpio, legible y sin dependencias externas.
 
 Al construir estos sistemas desde los fundamentos básicos, desmitificamos los frameworks de agentes modernos, comprendemos la mecánica profunda de la recuperación de información y aprendemos a construir aplicaciones de IA seguras, gobernadas y altamente observables.
@@ -185,6 +190,40 @@ cd 03_go_frameworks
 
 # Ejecutar el módulo de forma directa
 go run main.go
+```
+
+---
+
+## 🚀 Infraestructura Local y Calidad (Local CI & Containers)
+
+### 1. Calidad de Código Local (Sin Costos Cloud)
+Para evitar el costo de ejecuciones remotas en GitHub Actions, toda la suite de validación (linting, typechecking y tests) corre localmente.
+
+* **Ejecutar todos los controles locales**:
+  ```bash
+  ./scripts/local_check.sh
+  ```
+* **Instalar como Pre-commit hook de Git**:
+  ```bash
+  ./scripts/local_check.sh --install-hook
+  ```
+  Esto ejecutará automáticamente Ruff, Mypy, `tsc --noEmit` y `pytest` antes de cada commit.
+
+### 2. Contenedores con Docker Compose
+Puedes levantar una base de datos PostgreSQL con `pgvector` y hospedar los servidores MCP en contenedores:
+* **Levantar toda la infraestructura**:
+  ```bash
+  docker-compose up -d
+  ```
+* **Endpoints expuestos**:
+  * PostgreSQL: `localhost:5432`
+  * Servidor MCP Educativo (SSE): `http://localhost:8000`
+  * Servidor MCP Virtual Wallet (SSE): `http://localhost:8001`
+
+### 3. Despliegue en la Nube
+Para subir tu servidor MCP educativo a Railway, Fly.io o Google Cloud Run, ejecuta el script interactivo:
+```bash
+./scripts/deploy_mcp.sh
 ```
 
 ---

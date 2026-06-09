@@ -31,7 +31,6 @@ import os
 import sys
 from typing import TypedDict, Annotated, Sequence
 from langchain_core.messages import BaseMessage, HumanMessage, AIMessage
-from langchain_core.prompts import ChatPromptTemplate
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langgraph.graph import StateGraph, START, END
 from langgraph.graph.message import add_messages
@@ -45,7 +44,6 @@ from langfuse import Langfuse
 
 # 3. LangMem (Memoria semántica y a largo plazo del usuario)
 # Nota: LangMem extiende el grafo de agentes para aprender y retener conocimientos entre sesiones
-from langmem import create_manage_memory_tool
 
 # 4. LangServe (Servicios REST y API auto-documentados)
 from fastapi import FastAPI
@@ -174,7 +172,7 @@ def run_suite_demo():
     print("     export LANGCHAIN_API_KEY='lsv2_...'")
     
     # Verificación local
-    ls_client = LangSmithClient()
+    LangSmithClient()
     print(f"   - Estado: Client inicializado. Tracing habilitado en entorno = {os.environ.get('LANGCHAIN_TRACING_V2', 'false')}")
 
     # 4. LANGFUSE
@@ -182,7 +180,7 @@ def run_suite_demo():
     print("   - Propósito: Alternativa self-hosted para monitorizar costos, latencias y auditoría de prompts.")
     print("   - Integración: CallbackHandler inyectado en llamadas de LangChain.")
     
-    lf = Langfuse()
+    Langfuse()
     print("   - Estado: SDK de Langfuse importado. Integración callback lista para registrar trazas.")
 
     # 5. LANGMEM

@@ -35,7 +35,6 @@ import math
 import sqlite3
 import tempfile
 import os
-from datetime import datetime, timezone
 
 from mcp.server.fastmcp import FastMCP
 

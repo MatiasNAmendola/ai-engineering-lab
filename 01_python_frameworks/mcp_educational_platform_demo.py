@@ -64,15 +64,14 @@ import sys
 import json
 import asyncio
 from datetime import datetime, timezone, timedelta
-from typing import Optional
 
 from pydantic import BaseModel, Field
 from sqlalchemy import (
     create_engine, Column, Integer, String, Float, Text, DateTime,
-    ForeignKey, Enum as SAEnum, func, select, and_,
+    ForeignKey, func,
 )
 from sqlalchemy.orm import (
-    DeclarativeBase, Session, sessionmaker, relationship, joinedload,
+    DeclarativeBase, sessionmaker, relationship,
 )
 from mcp.server.fastmcp import FastMCP
 
@@ -400,7 +399,7 @@ def get_student_progress(student_id: int) -> dict:
         grades = session.query(Grade).filter(Grade.student_id == student_id).all()
 
         completed = [e for e in enrollments if e.status == "completed"]
-        active = [e for e in enrollments if e.status == "active"]
+        [e for e in enrollments if e.status == "active"]
 
         all_assignments = (
             session.query(Assignment)
@@ -608,7 +607,7 @@ async def generate_study_plan(student_id: int, goal: str) -> dict:
             f"Genera un plan de estudio detallado para alcanzar el objetivo."
         )
 
-        llm_response = await llm_generate(
+        await llm_generate(
             "Eres un planificador educativo experto en rutas de aprendizaje personalizadas.",
             prompt,
         )
@@ -946,7 +945,7 @@ async def run_demo():
     plan = await generate_study_plan(1, "Dominar Deep Learning para computer vision")
     print(f"   Objetivo: {plan['goal']}")
     print(f"   Duración: {plan['duration_weeks']} semanas")
-    print(f"   Cronograma:")
+    print("   Cronograma:")
     for week in plan["weekly_schedule"][:3]:
         print(f"     Semana {week['week']}: {week['focus']} ({week['hours_per_week']}h/semana)")
     print(f"     ... ({len(plan['weekly_schedule'])} semanas en total)")

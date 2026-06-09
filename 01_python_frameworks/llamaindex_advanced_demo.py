@@ -39,10 +39,6 @@ Ejecución: uv run 01_python_frameworks/llamaindex_advanced_demo.py
 """
 
 import os
-import sys
-import json
-import time
-from dataclasses import dataclass, field
 
 # ==========================================
 # IMPORTS CON GUARDA (permiten modo mock)
@@ -58,14 +54,13 @@ try:
         get_response_synthesizer,
     )
     from llama_index.core.node_parser import SentenceSplitter
-    from llama_index.core.schema import NodeWithScore, TextNode, QueryBundle
+    from llama_index.core.schema import NodeWithScore
     from llama_index.core.retrievers import BaseRetriever, RecursiveRetriever
     from llama_index.core.query_engine import RetrieverQueryEngine, RouterQueryEngine
     from llama_index.core.tools import QueryEngineTool
     from llama_index.core.selectors import LLMSingleSelector
     from llama_index.core.response_synthesizers import ResponseMode
     from llama_index.core.postprocessor import (
-        KeywordNodePostprocessor,
         MetadataReplacementPostProcessor,
     )
     from llama_index.core.evaluation import (

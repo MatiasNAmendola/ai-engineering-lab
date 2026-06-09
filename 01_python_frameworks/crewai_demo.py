@@ -15,7 +15,6 @@ Ejecución: uv run 01_python_frameworks/crewai_demo.py
 """
 
 import os
-import sys
 
 try:
     from crewai import Agent, Task, Crew, Process
