@@ -1,5 +1,5 @@
 import logging
-from ..domain.models import Secuencia, GenerationStatus, Textbook
+from ..domain.models import GenerationStatus, Textbook
 from ..domain.repositories import TextbookRepository
 from ..domain.services import TextbookAgentService
 

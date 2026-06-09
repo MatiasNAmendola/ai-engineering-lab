@@ -1,5 +1,5 @@
 import logging
-from ..domain.models import GenerationStatus, Textbook
+from ..domain.models import Textbook
 from ..domain.repositories import TextbookRepository, RequirementRepository
 from ..domain.services import TextbookAgentService
 from .generate_book_outline import GenerateBookOutlineUseCase

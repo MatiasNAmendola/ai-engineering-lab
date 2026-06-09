@@ -3,7 +3,6 @@ import logging
 from typing import List
 from pydantic import BaseModel
 from pydantic_ai import Agent
-from pydantic_ai.models.test import TestModel
 
 from ...domain.models import CurricularRequirement, Lesson, Secuencia
 from ...domain.services import (
@@ -109,8 +108,8 @@ class PydanticTextbookAgentService(TextbookAgentService):
             
         reqs_str = "\n".join([f"- [{r.code}]: {r.description}" for r in requirements])
         lessons_str = ""
-        for l in secuencia.lessons:
-            lessons_str += f"\nLección {l.number}: {l.title}\nInicio: {l.section_inicio}\nDesarrollo: {l.section_desarrollo}\nCierre: {l.section_cierre}\nActividades: {l.activities}\n"
+        for lesson in secuencia.lessons:
+            lessons_str += f"\nLección {lesson.number}: {lesson.title}\nInicio: {lesson.section_inicio}\nDesarrollo: {lesson.section_desarrollo}\nCierre: {lesson.section_cierre}\nActividades: {lesson.activities}\n"
             
         prompt = (
             f"Secuencia: '{secuencia.title}'\nObjetivos: {secuencia.objectives}\n"
@@ -194,7 +193,7 @@ class PydanticTextbookAgentService(TextbookAgentService):
                         "Platica con tu compañero de banca lo que imaginas de esta lección."
                     ),
                     section_desarrollo=(
-                        f"¡Manos a la obra! Vamos a realizar una actividad grupal. "
+                        "¡Manos a la obra! Vamos a realizar una actividad grupal. "
                         "El maestro escribirá palabras mágicas en el pizarrón. "
                         "Dibujaremos una carita feliz por cada palabra que descubramos. "
                         "[Ilustración: Un grupo de niños y niñas sonrientes sentados en círculo en la alfombra, señalando letras de colores]."
@@ -236,8 +235,8 @@ class PydanticTextbookAgentService(TextbookAgentService):
                 alignment_score=0.95,
                 age_score=0.92,
                 justification=(
-                    f"Excelente secuencia didáctica. Cumple al 100% con los objetivos curriculares. "
-                    f"El lenguaje es simple, cálido y promueve actividades prácticas y visuales "
-                    f"perfectamente adaptadas al desarrollo cognitivo de primer grado de primaria."
+                    "Excelente secuencia didáctica. Cumple al 100% con los objetivos curriculares. "
+                    "El lenguaje es simple, cálido y promueve actividades prácticas y visuales "
+                    "perfectamente adaptadas al desarrollo cognitivo de primer grado de primaria."
                 )
             )

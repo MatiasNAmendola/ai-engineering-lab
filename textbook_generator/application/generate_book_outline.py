@@ -35,7 +35,7 @@ class GenerateBookOutlineUseCase:
         try:
             outline = self.agent_service.generate_outline(textbook.subject, textbook.grade, requirements)
             logger.info(f"Outline generated successfully: '{outline.title}'")
-        except Exception as e:
+        except Exception:
             logger.exception("Failed to generate textbook outline")
             self.textbook_repo.update_textbook_status(textbook_id, GenerationStatus.REJECTED)
             return
