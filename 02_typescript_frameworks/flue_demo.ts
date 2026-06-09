@@ -50,7 +50,7 @@ async function runDemo() {
     });
 
     if (apiKey) {
-      console.log("[Flue] API key detectada. Agente creado con createAgent().\n");
+      console.log(`[Flue] API key detectada. Agente creado con createAgent(). (Existencia: ${!!codeReviewAgent})\n`);
       
       console.log("   Configuración del agente:");
       console.log("   - Modelo: google/gemini-1.5-flash");

@@ -29,14 +29,11 @@ const fetchDatabaseSchemaTool = {
 const apiKey = process.env.GEMINI_API_KEY;
 
 const agent = new Agent({
+  id: 'mastra-architect-agent',
   name: 'MastraArchitectAgent',
   instructions: 'Eres un arquitecto especializado en almacenamiento de datos para Inteligencia Artificial.',
-  model: {
-    provider: 'GOOGLE',
-    name: 'gemini-1.5-flash',
-    toolGating: true,
-  },
-  enabledTools: {
+  model: 'google/gemini-1.5-flash',
+  tools: {
     // Registramos la herramienta en el agente
     fetch_database_schema: fetchDatabaseSchemaTool,
   }
@@ -51,9 +48,7 @@ async function runDemo() {
   if (apiKey) {
     try {
       // Si hay API KEY, ejecuta la llamada real usando Mastra
-      const response = await agent.text({
-        messages: [prompt],
-      });
+      const response = await agent.generate([{ role: 'user', content: prompt }]);
       console.log("\nRespuesta del Agente Mastra:");
       console.log(response.text);
     } catch (error: any) {
