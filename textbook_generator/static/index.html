@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Curriculum Textbook Engine - Dashboard</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="logo-icon">
+                    <i class="fa-solid fa-graduation-cap"></i>
+                </div>
+                <h2>EduText<span>.AI</span></h2>
+            </div>
+            
+            <nav class="nav-menu">
+                <a href="#" class="nav-link active" data-target="dashboard-view">
+                    <i class="fa-solid fa-chart-pie"></i> Dashboard
+                </a>
+                <a href="#" class="nav-link" data-target="creator-view">
+                    <i class="fa-solid fa-circle-plus"></i> Crear Libro
+                </a>
+                <a href="#" class="nav-link" data-target="reader-view">
+                    <i class="fa-solid fa-book-open"></i> Biblioteca
+                </a>
+                <a href="#" class="nav-link" data-target="review-view">
+                    <i class="fa-solid fa-user-check"></i> 
+                    Cola de Revisión 
+                    <span class="badge review-count-badge">0</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="developer-info">
+                    <p>Clean Architecture</p>
+                    <span>V1.0.0 (PydanticAI)</span>
+                </div>
+                <button class="seed-btn" id="seed-db-btn" title="Sembrar requisitos curriculares">
+                    <i class="fa-solid fa-database"></i> Sembrar BD
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Top Header -->
+            <header class="top-header">
+                <div class="header-title">
+                    <h1 id="view-title">Dashboard del Sistema</h1>
+                    <p id="view-subtitle">Monitoreo de generación y gobernanza de libros de texto</p>
+                </div>
+                <div class="header-actions">
+                    <div class="api-status">
+                        <span class="status-indicator live" id="api-status-indicator"></span>
+                        <span id="api-status-text">Cargando API...</span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Notification Toast -->
+            <div id="toast" class="toast hidden">
+                <div class="toast-content">
+                    <i id="toast-icon" class="fa-solid fa-info-circle"></i>
+                    <span id="toast-message">Mensaje de notificación</span>
+                </div>
+            </div>
+
+            <!-- View: Dashboard -->
+            <section id="dashboard-view" class="view-section active">
+                <!-- Metrics Grid -->
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <div class="metric-icon blue">
+                            <i class="fa-solid fa-book"></i>
+                        </div>
+                        <div class="metric-details">
+                            <h3>Libros Creados</h3>
+                            <p class="metric-value" id="metric-total-books">0</p>
+                        </div>
+                    </div>
+                    
+                    <div class="metric-card">
+                        <div class="metric-icon orange">
+                            <i class="fa-solid fa-arrows-spin fa-spin-slow"></i>
+                        </div>
+                        <div class="metric-details">
+                            <h3>En Procesamiento</h3>
+                            <p class="metric-value" id="metric-generating-books">0</p>
+                        </div>
+                    </div>
+
+                    <div class="metric-card">
+                        <div class="metric-icon red">
+                            <i class="fa-solid fa-clipboard-question"></i>
+                        </div>
+                        <div class="metric-details">
+                            <h3>Cola de Revisión (HITL)</h3>
+                            <p class="metric-value review-count-badge">0</p>
+                        </div>
+                    </div>
+
+                    <div class="metric-card">
+                        <div class="metric-icon green">
+                            <i class="fa-solid fa-circle-check"></i>
+                        </div>
+                        <div class="metric-details">
+                            <h3>Alineación Promedio</h3>
+                            <p class="metric-value" id="metric-avg-alignment">0%</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Books List Section -->
+                <div class="section-card">
+                    <div class="card-header">
+                        <h2>Proyectos de Libros de Texto</h2>
+                        <button class="btn btn-primary btn-sm" onclick="app.switchView('creator-view')">
+                            <i class="fa-solid fa-plus"></i> Nuevo Libro
+                        </button>
+                    </div>
+                    <div class="table-container">
+                        <table class="data-table" id="books-table">
+                            <thead>
+                                <tr>
+                                    <th>Título</th>
+                                    <th>Asignatura</th>
+                                    <th>Grado</th>
+                                    <th>Estado de Generación</th>
+                                    <th>Fecha de Creación</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Dinámico -->
+                                <tr>
+                                    <td colspan="6" class="text-center">Cargando proyectos...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- View: Creator -->
+            <section id="creator-view" class="view-section">
+                <div class="creator-container">
+                    <div class="form-card">
+                        <div class="form-header">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i>
+                            <h2>Iniciar Proyecto de Libro de Texto</h2>
+                            <p>Ingresa los detalles para iniciar el pipeline de generación por agentes de IA.</p>
+                        </div>
+                        
+                        <form id="create-book-form">
+                            <div class="form-group">
+                                <label for="book-title">Título del Libro</label>
+                                <input type="text" id="book-title" placeholder="Ej. Mis Primeras Palabras / Desafíos de Sumas" required autocomplete="off">
+                            </div>
+
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label for="book-subject">Asignatura</label>
+                                    <select id="book-subject" required>
+                                        <option value="Español" selected>Español (Lenguaje)</option>
+                                        <option value="Matemáticas">Matemáticas</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="book-grade">Grado Escolar</label>
+                                    <select id="book-grade" required>
+                                        <option value="1" selected>1° de Primaria (6 años)</option>
+                                        <option value="2" disabled>2° de Primaria (no disponible)</option>
+                                        <option value="3" disabled>3° de Primaria (no disponible)</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="info-notice">
+                                <i class="fa-solid fa-circle-info"></i>
+                                <p><strong>Nota Pedagógica:</strong> La generación de un libro de texto completo toma de 1 a 2 minutos de forma asíncrona. Los agentes generarán secuencialmente los trimestres, secuencias didácticas y lecciones con el estándar <strong>Inicio-Desarrollo-Cierre</strong>.</p>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary btn-block">
+                                <i class="fa-solid fa-gears"></i> Iniciar Generación de Agentes
+                            </button>
+                        </form>
+                    </div>
+
+                    <div class="guidelines-card">
+                        <h3><i class="fa-solid fa-list-check"></i> Lineamientos Curriculares Activos</h3>
+                        <p>Los siguientes estándares del plan de estudios se utilizarán para la alineación del RAG:</p>
+                        <div class="requirements-list" id="requirements-preview-list">
+                            <!-- Dinámico -->
+                            <div class="text-center text-muted">Cargando requisitos...</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- View: Reader -->
+            <section id="reader-view" class="view-section">
+                <div class="reader-layout">
+                    <!-- Book Outline Hierarchy Selector -->
+                    <div class="reader-sidebar">
+                        <div class="sidebar-card">
+                            <h3 id="reader-book-title">Selecciona un Libro</h3>
+                            <span class="status-badge" id="reader-book-status">---</span>
+                            
+                            <div class="outline-selector mt-4">
+                                <label for="reader-book-selector">Proyecto Activo:</label>
+                                <select id="reader-book-selector">
+                                    <option value="">-- Elige un proyecto --</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Trimestres Tabs Selector -->
+                        <div class="trimestre-nav hidden" id="trimestre-tabs-nav">
+                            <button class="t-tab-btn active" data-t="1">T1</button>
+                            <button class="t-tab-btn" data-t="2">T2</button>
+                            <button class="t-tab-btn" data-t="3">T3</button>
+                        </div>
+
+                        <!-- Sequences List inside Selected Trimestre -->
+                        <div class="secuencias-list-container hidden" id="secuencias-sidebar-list">
+                            <h4>Secuencias Didácticas</h4>
+                            <div class="seq-list" id="sequences-nav-list">
+                                <!-- Dinámico -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Book Content View -->
+                    <div class="reader-content">
+                        <!-- Welcome / Empty State -->
+                        <div class="reader-empty" id="reader-empty-state">
+                            <i class="fa-solid fa-book-open-reader"></i>
+                            <h2>Biblioteca Educativa</h2>
+                            <p>Selecciona un libro de texto y navega por sus trimestres y secuencias didácticas para ver el contenido curricular generado.</p>
+                        </div>
+
+                        <!-- Actual content visualizer -->
+                        <div class="reader-pane hidden" id="reader-content-pane">
+                            <div class="sequence-header-card">
+                                <div class="seq-meta">
+                                    <span class="seq-num-tag" id="active-seq-num">Secuencia 1</span>
+                                    <span class="status-badge" id="active-seq-status">Draft</span>
+                                </div>
+                                <h2 id="active-seq-title">Cargando título de la secuencia...</h2>
+                                <div class="seq-objective">
+                                    <strong>Objetivo de Aprendizaje:</strong>
+                                    <p id="active-seq-objectives">Objetivo de la secuencia...</p>
+                                </div>
+                                
+                                <div class="seq-scores-bar" id="active-seq-scores">
+                                    <div class="score-pill">
+                                        <span>Alineación Curricular:</span>
+                                        <strong id="active-score-alignment">0%</strong>
+                                    </div>
+                                    <div class="score-pill">
+                                        <span>Adecuación de Edad (1°):</span>
+                                        <strong id="active-score-age">0%</strong>
+                                    </div>
+                                </div>
+                                <div class="regeneration-banner hidden" id="active-seq-feedback-panel">
+                                    <p><strong>Comentarios / Justificación del Evaluador:</strong></p>
+                                    <p class="feedback-text" id="active-seq-feedback-text"></p>
+                                    <button class="btn btn-outline-warning btn-sm mt-3" id="active-seq-regenerate-btn">
+                                        <i class="fa-solid fa-rotate"></i> Regenerar con Retroalimentación
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Lessons Container -->
+                            <div class="lessons-container" id="active-lessons-list">
+                                <!-- Dinámico -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- View: Educator Review Console (HITL) -->
+            <section id="review-view" class="view-section">
+                <!-- Empty State -->
+                <div class="reader-empty" id="review-empty-state">
+                    <i class="fa-solid fa-clipboard-check"></i>
+                    <h2>Cola de Revisión Vacía</h2>
+                    <p>¡Buen trabajo! No hay secuencias didácticas pendientes de revisión en este momento.</p>
+                </div>
+
+                <div class="review-layout hidden" id="review-content-pane">
+                    <!-- Left: Pending review items list -->
+                    <div class="review-sidebar">
+                        <h3>Pedagogía en Espera</h3>
+                        <div class="seq-list" id="review-queue-list">
+                            <!-- Dinámico -->
+                        </div>
+                    </div>
+
+                    <!-- Right: Sequence detail, content, evaluation dashboard, action form -->
+                    <div class="review-console">
+                        <!-- Top Header with scores -->
+                        <div class="console-header">
+                            <div>
+                                <span class="badge badge-warning">Requiere Human-in-the-Loop</span>
+                                <h2 id="console-seq-title">Nombre de la Secuencia</h2>
+                                <p id="console-book-info">Libro: --- | Trimestre: --</p>
+                            </div>
+                            
+                            <div class="console-scores">
+                                <div class="progress-ring-container">
+                                    <div class="score-circle red" id="console-score-alignment-circle">
+                                        <span class="score-text" id="console-score-alignment">0.0</span>
+                                        <span class="score-label">Curricular</span>
+                                    </div>
+                                </div>
+                                <div class="progress-ring-container">
+                                    <div class="score-circle orange" id="console-score-age-circle">
+                                        <span class="score-text" id="console-score-age">0.0</span>
+                                        <span class="score-label">Adecuación 1°</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Justification Box -->
+                        <div class="justification-card">
+                            <h3><i class="fa-solid fa-robot"></i> Justificación de la Evaluación de Agente</h3>
+                            <p id="console-justification">Justificación de la IA...</p>
+                        </div>
+
+                        <!-- Lesson Preview Tab -->
+                        <div class="console-lessons-preview" id="console-lessons-preview-container">
+                            <!-- Lessons list dinámico -->
+                        </div>
+
+                        <!-- Review Action Form -->
+                        <div class="action-card">
+                            <h3><i class="fa-solid fa-gavel"></i> Dictamen del Educador</h3>
+                            <p class="text-muted">Como experto humano, evalúa si apruebas este contenido para el aula o si requiere ajustes adicionales.</p>
+                            
+                            <form id="review-decision-form">
+                                <div class="form-group">
+                                    <label for="review-feedback-input">Retroalimentación o correcciones pedagógicas (Requerido para rechazo)</label>
+                                    <textarea id="review-feedback-input" rows="3" placeholder="Ej: Las actividades de la lección 2 son muy complejas para primer grado. Simplificar las palabras a silabas sencillas y añadir dinámicas corporales..."></textarea>
+                                </div>
+                                
+                                <div class="action-buttons">
+                                    <button type="button" class="btn btn-success" id="btn-approve-seq">
+                                        <i class="fa-solid fa-circle-check"></i> Aprobar Secuencia
+                                    </button>
+                                    <button type="button" class="btn btn-danger" id="btn-reject-seq">
+                                        <i class="fa-solid fa-circle-xmark"></i> Rechazar con Retroalimentación
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>
