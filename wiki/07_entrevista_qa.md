@@ -470,6 +470,53 @@ Esto es **plataforma**, no framework. El framework resuelve "cómo hago un agent
 - **MTTR (Mean Time To Recovery)**: cuánto tarda en detectarse y corregirse un agente errático
 - **Governance violations**: intentos de bypass de budget/kill switch/PII
 
+---
+
+## Sección 10: Arquitectura de Pipelines y Decision Records (ADR)
+
+> Los sistemas de producción modernos requieren estructurar flujos complejos en forma de pipelines (cadenas, DAGs, bucles ReAct o multi-agente) gobernados por contratos estrictos, y optimizando sus atributos de calidad (NFRs).
+
+### 53. **¿Cómo decidís la topología de un pipeline de agentes en producción?**
+
+La elección de la topología depende de un análisis de trade-offs entre autonomía, latencia, costo, predictibilidad y complejidad de testing.
+
+- **Lineal (Secuencial)**: Si el proceso es predecible, determinista y el output de una etapa alimenta directamente a la siguiente (ej: formateo $\to$ clasificación $\to$ extracción). Ofrece latencia y costo bajos, con máxima predictibilidad.
+- **DAG (Grafo Acíclico Dirigido)**: Si el proceso requiere ramificación condicional (routing) o paralelización de sub-tareas, pero no bucles de retroalimentación. Permite usar concurrencia asíncrona para optimizar tiempos.
+- **Cíclico (ReAct)**: Si el problema es de exploración libre o requiere auto-corrección iterativa (ej: ejecutar código, verificar error, ajustar código). Ofrece adaptabilidad a cambio de costos y latencias variables y el riesgo de bucles infinitos.
+- **Multi-agente**: Si el dominio es tan amplio que requiere agentes especializados con herramientas y contextos aislados y acotados. Mejora la precisión individual a expensas de una latencia agregada severa, dilución de contexto y mayor dificultad de depuración.
+
+Para profundizar en el análisis comparativo, consultá el [Decision Record de Pipelines](./08_pipeline_architecture_adr.md#1-topologia-de-pipelines-comparativa-y-decisiones-de-diseño).
+
+### 54. **¿Cómo optimizás los requerimientos no funcionales (NFRs) de latencia y costo en pipelines complejos?**
+
+La optimización de NFRs en pipelines de producción se aborda en tres niveles:
+1.  **Paralelismo y Streaming**: En topologías DAG, ejecuto sub-tareas independientes de forma concurrente con `asyncio` o pools de hilos. Para interfaces de usuario, es innegociable implementar streaming de tokens vía **Server-Sent Events (SSE)** para reducir el TTFT (Time-To-First-Token) percibido por el usuario, tal como está implementado en [01_llm_inference_scratch.py](../00_primitives_scratch/01_llm_inference_scratch.py).
+2.  **Model Routing y Caching**: Utilizo routing dinámico de modelos basado en la complejidad de la tarea (ej. clasificar intenciones con modelos rápidos y económicos de 8B, y razonar lógica compleja con modelos de 400B). Complemento esto con **Cache Semántica** sobre pgvector: si la consulta del usuario es semánticamente idéntica a una resuelta previamente en un 96%, sirvo el resultado guardado reduciendo el costo y la latencia a cero.
+3.  **Circuit Breaker y Fallbacks**: Si un proveedor API falla repetidamente, el runtime suspende temporalmente las llamadas hacia él y activa una ruta de fallback alternativa (ej. desviar llamadas de Claude a Gemini). Esto previene fallas en cascada y garantiza alta disponibilidad.
+
+Detalles de implementación y código en el [Decision Record de Pipelines](./08_pipeline_architecture_adr.md#2-optimizacion-por-nfr-non-functional-requirements).
+
+### 55. **¿Cómo diseñás los contratos entre las etapas de un pipeline para asegurar robustez?**
+
+Para evitar que fallos en una etapa propaguen errores catastróficos downstream:
+1.  **Validación de Esquemas (Output Parsing)**: Utilizo esquemas fuertemente tipados a través de **Pydantic** y el soporte nativo de Structured Outputs de las APIs. Cada etapa debe garantizar que su respuesta cumple con el contrato JSON esperado antes de pasar a la siguiente, evitando excepciones de parseo en producción.
+2.  **Versionado de Prompts**: Trato a las plantillas de prompts como código y las versiono en Git. Cada ejecución instrumentada en producción asocia el `prompt_version` y el `prompt_hash` a los spans correspondientes, permitiendo correlacionar regresiones de calidad con modificaciones de System Prompts.
+3.  **Retrocompatibilidad de Tools**: Al actualizar la interfaz de una herramienta, diseño firmas retrocompatibles (ej. agregando campos opcionales con defaults), evitando romper ejecuciones asíncronas en vuelo o agentes que recuperan planes de ejecución antiguos.
+
+Explicación completa de este enfoque de gobernanza en el [Decision Record de Pipelines](./08_pipeline_architecture_adr.md#3-contratos-entre-etapas-stage-contracts).
+
+### 56. **¿Qué patrones avanzados de refinamiento y procesamiento recomendás para pipelines de agentes?**
+
+En sistemas corporativos de nivel senior, aplico cuatro patrones principales:
+-   **Chain-of-Thought (CoT) Explícito**: Instruyo al modelo para razonar paso a paso dentro de etiquetas específicas (ej. `<thinking>...</thinking>`) antes de formatear la salida final. Esto separa el cómputo de la lógica de razonamiento del formateo sintáctico, mejorando la tasa de éxito del output estructurado.
+-   **Reranker como Post-Proceso**: En pipelines RAG, uso un modelo de reordenamiento (*cross-encoder*) sobre los 15-20 chunks iniciales devueltos por la búsqueda vectorial. Esto re-ordena los fragmentos por relevancia semántica real, descartando ruido de contexto para reducir tokens y mitigar el efecto *Lost-in-the-Middle*. Implementado en [llamaindex_advanced_demo.py](../01_python_frameworks/llamaindex_advanced_demo.py).
+-   **Ensemble (Consenso Multi-Modelo)**: Envío consultas complejas en paralelo a múltiples modelos competidores (OpenAI, Anthropic, Gemini) y unifico las respuestas a través de un mecanismo de consenso o votación, neutralizando sesgos individuales de proveedores.
+-   **Speculative Execution**: Lanzo ejecuciones especulativas con modelos rápidos (pequeños) prediciendo la ruta más probable del flujo. Si se confirma la predicción, acorto los tiempos de respuesta; de lo contrario, se descarta y se procesa por la ruta determinista estándar.
+
+Análisis detallado en el [Decision Record de Pipelines](./08_pipeline_architecture_adr.md#4-patrones-avanzados-de-pipelines-y-cadenas).
+
+---
+
 | Tema | Wiki | Código |
 |------|------|--------|
 | Inferencia HTTP/SSE | [01_llm_inference](./01_llm_inference.md) | [01_llm_inference_scratch.py](../00_primitives_scratch/01_llm_inference_scratch.py) |
@@ -478,6 +525,8 @@ Esto es **plataforma**, no framework. El framework resuelve "cómo hago un agent
 | Observabilidad/Evals | [04_observability_and_evals](./04_observability_and_evals.md) | [04_observability_and_evals.py](../00_primitives_scratch/04_observability_and_evals.py) |
 | Gobernanza/Seguridad | [05_governance_and_security](./05_governance_and_security.md) | [05_governance_and_security.py](../00_primitives_scratch/05_governance_and_security.py) |
 | Ecosistema Frameworks | [06_framework_ecosystem](./06_framework_ecosystem.md) | `01_python_frameworks/` (20+ demos) |
+| Pipelines de Agentes (ADR) | [08_pipeline_architecture_adr](./08_pipeline_architecture_adr.md) | Múltiples Demos y Primitivas |
+
 
 ### Demos de Frameworks Implementados
 

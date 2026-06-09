@@ -19,6 +19,10 @@ Un sistema de agentes moderno se divide en capas bien diferenciadas:
 *   **Memory Engine**: El sistema que decide qué información retener, consolidar y recuperar según el contexto.
 *   **Governance & Context Propagation**: La capa transversal que inyecta seguridad e identifica de forma única cada llamada anidada.
 
+> [!NOTE]
+> Para un análisis detallado sobre cómo seleccionar, estructurar y optimizar la topología de estos workflows (Lineal, DAG, Cíclico/ReAct y Multi-Agente), consulte el [Decision Record de Arquitectura de Pipelines](./08_pipeline_architecture_adr.md).
+
+
 ```
        ┌──────────────────────────────────────────────────┐
        │                  AGENT RUNTIME                   │
