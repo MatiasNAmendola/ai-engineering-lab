@@ -11,7 +11,8 @@ from ...domain.models import (
 from ...application.use_cases import (
     CreateTextbookUseCase, GenerateBookWorkflowUseCase, ReviewSequenceUseCase,
     ContextualizeTextbookUseCase, MapContenidosPDAUseCase,
-    EvaluatePDAAlignmentUseCase, GenerateProyectoIntegradorUseCase
+    EvaluatePDAAlignmentUseCase, GenerateProyectoIntegradorUseCase,
+    ExportConalitegFormatUseCase
 )
 from ..database.sqlite_repository import (
     SQLiteTextbookRepository, SQLiteRequirementRepository, SQLiteNEMRepository
@@ -176,6 +177,10 @@ def regenerate_secuencia(
     if secuencia.review_feedback:
         objectives += f"\n[REGENERATION GUIDELINE: {secuencia.review_feedback}]"
 
+    # Update status immediately so that background task does not get overwritten
+    secuencia.status = GenerationStatus.GENERATING
+    textbook_repo.update_secuencia(secuencia)
+    
     background_tasks.add_task(
         workflow_use_case.generate_single_sequence,
         textbook,
@@ -185,9 +190,7 @@ def regenerate_secuencia(
         objectives,
         requirement_repo.list_requirements(textbook.subject, textbook.grade)
     )
-
-    secuencia.status = GenerationStatus.GENERATING
-    textbook_repo.update_secuencia(secuencia)
+    
     return secuencia
 
 
@@ -259,6 +262,18 @@ def link_proyecto_integrador(
     try:
         use_case = GenerateProyectoIntegradorUseCase(textbook_repo)
         return use_case.execute(secuencia_id, req.tipo, req.nombre, req.descripcion)
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+
+
+@router.get("/books/{textbook_id}/export")
+def export_textbook_conaliteg(
+    textbook_id: int,
+    textbook_repo: SQLiteTextbookRepository = Depends(get_textbook_repo)
+):
+    try:
+        use_case = ExportConalitegFormatUseCase(textbook_repo)
+        return use_case.execute(textbook_id)
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e))
 

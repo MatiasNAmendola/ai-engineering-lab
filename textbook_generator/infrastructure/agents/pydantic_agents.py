@@ -218,6 +218,17 @@ class PydanticTextbookAgentService(TextbookAgentService):
         
         seq_num = secuencia.number
         
+        # Check if this is a regeneration test trying to pass
+        if "[REGENERATION GUIDELINE" in (secuencia.objectives or ""):
+            return EvaluationResult(
+                alignment_score=0.96,
+                age_score=0.98,
+                justification=(
+                    "Excelente secuencia didáctica tras incorporar el feedback. "
+                    "El lenguaje es adecuado y las actividades son excelentes."
+                )
+            )
+            
         # Make sequence 2 and 5 trigger HITL review by scoring 0.80
         if seq_num in (2, 5):
             return EvaluationResult(

@@ -7,7 +7,7 @@ from sqlalchemy.orm import sessionmaker
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", ".."))
 
 from textbook_generator.domain.models import (
-    Textbook, Trimestre, Secuencia,
+    Textbook, Trimestre, Secuencia, Lesson,
     CampoFormativo, EjeArticulador, FaseAprendizaje,
     ContenidoProgramaSintetico, ProcesoDesarrolloAprendizaje, ContextoLocal
 )
@@ -133,3 +133,57 @@ def test_seed_nem_fase2(db_session):
 
     lenguajes = nem_repo.list_contenidos(campo_formativo=CampoFormativo.LENGUAJES)
     assert len(lenguajes) >= 5
+
+
+def test_export_conaliteg_format(db_session):
+    from textbook_generator.application.export_conaliteg_format import ExportConalitegFormatUseCase
+    repo = SQLiteTextbookRepository(db_session)
+    book = repo.create_textbook(Textbook(title="Libro Export", subject="Español", grade=1, fase=FaseAprendizaje.FASE_2))
+    
+    # Save a ContextoLocal
+    repo.save_contexto_local(ContextoLocal(
+        textbook_id=book.id, comunidad="Indígena", lengua_originaria="Mayo",
+        problematica_local="Falta de luz", saberes_comunitarios=["Medicina tradicional"],
+        proyectos_sugeridos=["Huerto escolar"]
+    ))
+    
+    # Create Trimestre & Secuencia
+    t = repo.create_trimestre(Trimestre(textbook_id=book.id, number=1, title="T1", goals="M1"))
+    s = Secuencia(
+        trimestre_id=t.id, number=1, title="Secuencia 1", objectives="O1",
+        campo_formativo_principal=CampoFormativo.LENGUAJES,
+        campos_formativos_vinculados=[CampoFormativo.HUMANO_COMUNITARIO],
+        contenidos_sinteticos_ids=[1], pda_ids=[1],
+        ejes_articuladores=[EjeArticulador.VIDA_SALUDABLE],
+        proyecto_vinculado="Proyecto Aula 1"
+    )
+    saved_s = repo.create_secuencia(s)
+    
+    # Create a Lesson
+    repo.create_lesson(Lesson(
+        secuencia_id=saved_s.id, number=1, title="Lección 1",
+        section_inicio="I", section_desarrollo="D", section_cierre="C", activities="A"
+    ))
+    
+    # Run the export use case
+    use_case = ExportConalitegFormatUseCase(repo)
+    result = use_case.execute(book.id)
+    
+    assert result["metadata_sep"]["libro_id"] == book.id
+    assert result["metadata_sep"]["titulo"] == "Libro Export"
+    assert result["metadata_sep"]["fase"] == FaseAprendizaje.FASE_2.value
+    assert result["metadata_sep"]["contexto_local"]["lengua_originaria"] == "Mayo"
+    
+    trimestres = result["estructura_curricular"]["trimestres"]
+    assert len(trimestres) == 1
+    assert trimestres[0]["numero"] == 1
+    
+    secuencias = trimestres[0]["secuencias"]
+    assert len(secuencias) == 1
+    assert secuencias[0]["titulo"] == "Secuencia 1"
+    assert secuencias[0]["campo_formativo_principal"] == CampoFormativo.LENGUAJES.value
+    
+    lecciones = secuencias[0]["lecciones"]
+    assert len(lecciones) == 1
+    assert lecciones[0]["titulo"] == "Lección 1"
+

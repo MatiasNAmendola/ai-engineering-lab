@@ -7,3 +7,4 @@ from .contextualize_textbook import ContextualizeTextbookUseCase  # noqa: F401
 from .map_contenidos_pda import MapContenidosPDAUseCase  # noqa: F401
 from .evaluate_pda_alignment import EvaluatePDAAlignmentUseCase  # noqa: F401
 from .generate_proyecto_integrador import GenerateProyectoIntegradorUseCase  # noqa: F401
+from .export_conaliteg_format import ExportConalitegFormatUseCase  # noqa: F401
