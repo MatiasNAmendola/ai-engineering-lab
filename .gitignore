@@ -1,0 +1,51 @@
+# Clones externos de referencia
+external/
+
+# Node.js / Bun
+node_modules/
+bun.lock
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.uv/
+.venv/
+
+# Go
+*.exe
+*.test
+gollem_demo
+
+# Bases de datos temporales (generadas por demos)
+*.db
+*.duckdb
+*.sqlite
+lancedb_*/
+
+# Frameworks (config local)
+.flue/
+.pi/
+
+# Logs
+*.log
+
+# IDEs y editores
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Entorno
+.env
+.env.local
+.env.*.local
+
+# Temporales
+tmp/
+temp/
