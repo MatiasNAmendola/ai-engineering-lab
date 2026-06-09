@@ -5,7 +5,10 @@ import sys
 import os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "00_primitives_scratch"))
 
-from 01_llm_inference_scratch import CostTracker, extract_and_parse_json
+import importlib
+_llm_inference = importlib.import_module("01_llm_inference_scratch")
+CostTracker = _llm_inference.CostTracker
+extract_and_parse_json = _llm_inference.extract_and_parse_json
 
 
 def test_cost_tracker():
