@@ -1,0 +1,14 @@
+{
+  "name": "typescript_frameworks_demo",
+  "version": "1.0.0",
+  "type": "module",
+  "dependencies": {
+    "@earendil-works/pi-coding-agent": "^0.79.0",
+    "@flue/runtime": "^0.10.1",
+    "@mastra/core": "^1.41.0",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "typescript": "^6.0.3"
+  }
+}

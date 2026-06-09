@@ -1,0 +1,24 @@
+[project]
+name = "python-frameworks-demo"
+version = "0.1.0"
+description = "Demo de frameworks de agentes en Python usando uv"
+dependencies = [
+    "pydantic-ai>=1.106.0",
+    "pydantic>=2.13.4",
+    "logfire>=4.35.0",
+    "langgraph>=1.2.4",
+    "langchain>=1.3.4",
+    "langchain-google-genai>=4.2.4",
+    "langsmith>=0.8.11",
+    "langfuse>=4.7.1",
+    "langserve>=0.3.3",
+    "fastapi>=0.136.3",
+    "uvicorn>=0.49.0",
+    "langmem>=0.0.30",
+    "openai-agents>=0.17.4",
+    "crewai>=1.14.6",
+    "mcp>=1.27.2",
+    "deepagents>=0.6.8",
+    "openai>=2.41.0",
+]
+requires-python = ">=3.11"
