@@ -49,3 +49,6 @@ Thumbs.db
 # Temporales
 tmp/
 temp/
+
+# SDD
+.atl/
