@@ -21,6 +21,20 @@ Este repositorio está estructurado siguiendo la metodología de **LLM Wiki / Ob
 
 ---
 
+## 🎨 Principios de Diseño por Componente (SOLID, KISS, Clean)
+
+No todos los componentes de este repositorio tienen el mismo propósito ni aplican las mismas reglas. Diseñamos la base de código aplicando principios de ingeniería pragmáticos adaptados a cada contexto:
+
+| Componente / Carpeta | Propósito | Principios Aplicados | Justificación & Documentación |
+| :--- | :--- | :--- | :--- |
+| **[Textbook Generator](./textbook_generator/)** | Aplicación principal empresarial / de producción. | Clean Architecture, Screaming Architecture, SOLID, Guardrails/HITL | Sigue una separación estricta en capas (Domain, Application, Infrastructure) para garantizar que las reglas de negocio sean independientes de las APIs de IA y las bases de datos. Documentado en detalle en el [README del Textbook Generator](./textbook_generator/README.md) y en el [System Design](./wiki/09_system_design_textbook_generator.md). |
+| **[Primitivas desde Cero](./00_primitives_scratch/)** | Scripts educativos para entender la mecánica de la IA (SSE, RAG, evaluadores, gating). | KISS, YAGNI, SRP (Single Responsibility) | Son scripts standalone auto-contenidos (~200 líneas). Aplicar Clean Architecture aquí sería sobreingeniería (violaría KISS). Se prioriza la legibilidad sin dependencias externas. Documentado en la [Introducción a la Wiki](./wiki/00_introduccion.md). |
+| **[Demos de Frameworks](./01_python_frameworks/)** | Pruebas de concepto y benchmarks de herramientas de terceros (CrewAI, Mastra, Gollem). | KISS, YAGNI, Model Routing | Son sandboxes aislados diseñados para evaluar la experiencia de desarrollo (DX) y rendimiento de cada framework de forma directa, evitando envoltorios complejos. Documentado en el [Ecosistema de Frameworks](./wiki/06_framework_ecosystem.md). |
+
+Para prepararte y defender este diseño frente a stakeholders o en sesiones de arquitectura en vivo, consulta el **[Playbook de Presentación para Stakeholders](./wiki/12_playbook_presentacion_stakeholders.md)**, el cual enseña a traducir estas decisiones técnicas a impacto de producto y ROI financiero.
+
+---
+
 ## 📖 Guías de Aprendizaje (Estilo Karpathy)
 
 Para entender a fondo la base teórica y las implicaciones arquitectónicas de cada primitivo implementado, hemos desarrollado una serie de guías detalladas escritas bajo una filosofía de primeros principios:
