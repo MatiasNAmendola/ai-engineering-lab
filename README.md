@@ -226,6 +226,32 @@ Para subir tu servidor MCP educativo a Railway, Fly.io o Google Cloud Run, ejecu
 ./scripts/deploy_mcp.sh
 ```
 
+### 4. Tests E2E de Browser con Playwright
+El proyecto incluye tests end-to-end que validan la SPA (Single Page Application) del Textbook Generator navegando la interfaz real con Chromium headless.
+
+* **Instalar Playwright y Chromium (una vez)**:
+  ```bash
+  uv run --project 01_python_frameworks playwright install chromium
+  ```
+
+* **Ejecutar tests de browser**:
+  ```bash
+  uv run --project 01_python_frameworks --with pytest --with pytest-playwright --with requests pytest tests/textbook_generator/browser/ -v
+  ```
+
+* **Qué validan los tests**:
+  - Renderizado correcto de la SPA (dashboard, biblioteca, cola de revisión)
+  - Flujo completo: crear libro → generación → HITL review → aprobar/rechazar
+  - Métricas del dashboard y estado de la API
+  - Metadatos NEM (Campos Formativos, Ejes Articuladores)
+  - Botones de regeneración y feedback
+
+* **Arquitectura de los tests**:
+  - Servidor FastAPI auto-arranca en puerto efímero (aislado de desarrollo)
+  - Base de datos SQLite temporal eliminada tras cada run
+  - 20 tests cubriendo todos los flujos del UI
+  - ~90 segundos de ejecución total
+
 ---
 
 ## 📚 Referencias y Fuentes

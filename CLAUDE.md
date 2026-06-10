@@ -49,4 +49,23 @@ Al asistir al desarrollador en pruebas locales, utilizar obligatoriamente los si
     *   Ejecutar script: `bun run <ruta_al_script.ts>`
 *   **Go (goenv / go)**:
     *   Ejecutar módulo: `go run <ruta_al_archivo.go>` o `go build` en el directorio.
+*   **Tests E2E de Browser (Playwright)**:
+    *   Instalar Chromium (una vez): `uv run --project 01_python_frameworks playwright install chromium`
+    *   Ejecutar tests: `uv run --project 01_python_frameworks --with pytest --with pytest-playwright --with requests pytest tests/textbook_generator/browser/ -v`
+    *   Los tests auto-arrancan un servidor FastAPI en puerto efímero con SQLite temporal
+    *   ~20 tests, ~90 segundos de ejecución
+    *   Si fallan, verificar que Chromium esté instalado y que no haya otro servidor corriendo en el puerto
+
+---
+
+## 🧪 Estrategia de Testing
+
+El proyecto implementa una pirámide de testing completa:
+
+1. **Unit Tests** (`tests/test_*.py`): Tests aislados de funciones y clases
+2. **Integration Tests** (`tests/test_integration.py`): Tests de base de datos y APIs
+3. **E2E Tests de API** (`tests/test_e2e.py`): Tests de flujos completos vía HTTP
+4. **E2E Tests de Browser** (`tests/textbook_generator/browser/`): Tests de UI con Playwright navegando la SPA real
+
+**Regla**: Al modificar el frontend (`textbook_generator/static/`) o flujos de usuario, ejecutar tests de browser para validar que la UI funcione correctamente.
 
