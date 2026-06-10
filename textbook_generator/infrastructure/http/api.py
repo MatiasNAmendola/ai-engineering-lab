@@ -177,7 +177,6 @@ def regenerate_secuencia(
     if secuencia.review_feedback:
         objectives += f"\n[REGENERATION GUIDELINE: {secuencia.review_feedback}]"
 
-    # Update status immediately so that background task does not get overwritten
     secuencia.status = GenerationStatus.GENERATING
     textbook_repo.update_secuencia(secuencia)
     
@@ -266,13 +265,14 @@ def link_proyecto_integrador(
         raise HTTPException(status_code=404, detail=str(e))
 
 
-@router.get("/books/{textbook_id}/export")
+@router.get("/books/{textbook_id}/export/conaliteg")
 def export_textbook_conaliteg(
     textbook_id: int,
-    textbook_repo: SQLiteTextbookRepository = Depends(get_textbook_repo)
+    textbook_repo: SQLiteTextbookRepository = Depends(get_textbook_repo),
+    nem_repo: SQLiteNEMRepository = Depends(get_nem_repo)
 ):
     try:
-        use_case = ExportConalitegFormatUseCase(textbook_repo)
+        use_case = ExportConalitegFormatUseCase(textbook_repo, nem_repo)
         return use_case.execute(textbook_id)
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e))

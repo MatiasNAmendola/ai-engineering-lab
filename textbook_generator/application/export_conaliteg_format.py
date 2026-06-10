@@ -1,14 +1,14 @@
 import logging
 from typing import Dict, Any
-from ..domain.repositories import TextbookRepository
+from ..domain.repositories import TextbookRepository, NEMRepository
 
 logger = logging.getLogger(__name__)
 
-class ExportConalitegFormatUseCase:
-    """Export a textbook in a structured JSON payload conforming to CONALITEG / SEP requirements."""
 
-    def __init__(self, textbook_repo: TextbookRepository):
+class ExportConalitegFormatUseCase:
+    def __init__(self, textbook_repo: TextbookRepository, nem_repo: NEMRepository):
         self.textbook_repo = textbook_repo
+        self.nem_repo = nem_repo
 
     def execute(self, textbook_id: int) -> Dict[str, Any]:
         logger.info(f"Exporting textbook ID: {textbook_id} to CONALITEG format")
@@ -26,7 +26,38 @@ class ExportConalitegFormatUseCase:
                 "proyectos_sugeridos": textbook.contexto_local.proyectos_sugeridos or []
             }
 
+        all_contenido_ids = set()
+        all_pda_ids = set()
+        for t in textbook.trimestres:
+            for s in t.secuencias:
+                all_contenido_ids.update(s.contenidos_sinteticos_ids)
+                all_pda_ids.update(s.pda_ids)
+
+        programa_sintetico_map = {}
+        for c_id in all_contenido_ids:
+            contenido = self.nem_repo.get_contenido(c_id)
+            if contenido:
+                programa_sintetico_map[c_id] = {
+                    "codigo": contenido.codigo,
+                    "descripcion": contenido.descripcion,
+                    "campo_formativo": contenido.campo_formativo.value,
+                    "fase": contenido.fase.value
+                }
+
+        cobertura_pda_map = {}
+        for p_id in all_pda_ids:
+            pda = self.nem_repo.get_pda(p_id)
+            if pda:
+                cobertura_pda_map[p_id] = {
+                    "descripcion": pda.descripcion,
+                    "fase": pda.fase.value,
+                    "contenido_id": pda.contenido_id
+                }
+
+        ejes_matrix = {}
+        proyectos_list = []
         trimestres_list = []
+
         for t in textbook.trimestres:
             secuencias_list = []
             for s in t.secuencias:
@@ -41,6 +72,24 @@ class ExportConalitegFormatUseCase:
                             "cierre": lesson.section_cierre
                         },
                         "actividades_sugeridas": lesson.activities
+                    })
+
+                for eje in s.ejes_articuladores:
+                    eje_val = eje.value
+                    if eje_val not in ejes_matrix:
+                        ejes_matrix[eje_val] = []
+                    ejes_matrix[eje_val].append({
+                        "trimestre": t.number,
+                        "secuencia": s.number,
+                        "titulo": s.title
+                    })
+
+                if s.proyecto_vinculado:
+                    proyectos_list.append({
+                        "trimestre": t.number,
+                        "secuencia": s.number,
+                        "nombre": s.proyecto_vinculado,
+                        "campo_formativo": s.campo_formativo_principal.value if s.campo_formativo_principal else None
                     })
 
                 secuencias_list.append({
@@ -66,6 +115,24 @@ class ExportConalitegFormatUseCase:
             })
 
         conaliteg_payload = {
+            "metadata": {
+                "titulo": textbook.title,
+                "materia": textbook.subject,
+                "grado": textbook.grade,
+                "fase": textbook.fase.value if textbook.fase else None,
+                "fecha_generacion": textbook.created_at.isoformat() if hasattr(textbook.created_at, "isoformat") else str(textbook.created_at),
+                "version": "1.0.0-conaliteg"
+            },
+            "programa_sintetico": programa_sintetico_map,
+            "programa_analitico": {
+                "contexto_local": contexto_data
+            },
+            "estructura": {
+                "trimestres": trimestres_list
+            },
+            "cobertura_pda": cobertura_pda_map,
+            "ejes_articuladores": ejes_matrix,
+            "proyectos_integradores": proyectos_list,
             "metadata_sep": {
                 "institucion": "CONALITEG",
                 "programa": "Plan de Estudio 2022 (Nueva Escuela Mexicana)",
