@@ -16,7 +16,7 @@ logging.basicConfig(
 )
 logger = logging.getLogger("textbook_generator")
 
-DB_PATH = "textbook_generator.db"
+DB_PATH = os.environ.get("TEXTBOOK_DB_PATH", "textbook_generator.db")
 DATABASE_URL = f"sqlite:///{DB_PATH}"
 
 logger.info(f"Connecting to SQLite Database at: {DATABASE_URL}")
