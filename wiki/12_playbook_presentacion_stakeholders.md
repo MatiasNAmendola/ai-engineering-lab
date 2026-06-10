@@ -99,6 +99,23 @@ El modelo de negocio y el control de costos operativos de tokens de IA.
 
 ---
 
+## ⏱️ Guión de Explicación Rápida (Pitch de 5 Minutos)
+
+Este guión sigue la regla de **"1 minuto por paso"**. Úsalo para mantener el control y la atención de la audiencia en una presentación corta:
+
+*   **Minuto 1: El Desafío y el Contexto (Usuario y Regulación)**
+    > *"Diseñamos un generador de libros para **niños de 6 años** alineado a la **SEP mexicana**. El gran desafío de ingeniería aquí no es la IA, es la **adecuación pedagógica y el límite físico**. No podemos pedirle a un LLM que escriba un libro entero de un tirón porque alucinaría y rompería la ventana de contexto. Por eso, dividimos el problema en un workflow determinista controlado por código: 3 trimestres, con 6 secuencias didácticas cada uno."*
+*   **Minuto 2: La Base de Datos y el RAG Curricular (SQLite vs. Vectorial)**
+    > *"Para garantizar que el libro cumpla con el programa de la SEP, inyectamos los contenidos oficiales en tiempo real. **Aquí tomamos una decisión pragmática:** en lugar de pagar y configurar una costosa base de datos vectorial (como Pinecone), que introduce latencia de red y respuestas imprecisas, usamos **SQLite local**. Los lineamientos oficiales son estáticos y pequeños (<1000 registros). Al usar filtros relacionales SQL exactos, garantizamos 100% de precisión de objetivos a costo cero."*
+*   **Minuto 3: Generación Híbrida y Clean Architecture (PydanticAI)**
+    > *"Separamos el sistema usando **Clean Architecture**. La orquestación del flujo y el esqueleto del libro se manejan con código duro Python. Para interactuar con la IA, usamos **PydanticAI** en lugar de LangChain. ¿Por qué? Para evitar el 'complexity tax' (impuesto de complejidad) de LangChain. PydanticAI nos da validación de esquemas (JSON) nativa y tipado estático, asegurando que la IA devuelva exactamente la estructura de lección requerida (Inicio, Desarrollo y Cierre) sin romper el frontend."*
+*   **Minuto 4: Control de Calidad y Human-in-the-Loop (HITL)**
+    > *"La IA nunca escribe directo al aula. Al generar cada secuencia didáctica, un agente evaluador independiente (**LLM-as-a-Judge**) califica la lección del 0 al 1 en alineación curricular y vocabulario infantil. Si la calificación es menor a **0.85**, el sistema frena la secuencia de forma asíncrona y la envía a una cola de revisión humana. Un docente la corrige desde un dashboard y esa corrección vuelve a alimentar nuestro dataset para mejorar el modelo."*
+*   **Minuto 5: Viabilidad Financiera y Context Caching**
+    > *"Para producción, decidimos **no cachear lecciones** en Redis para evitar que distintas escuelas tengan libros idénticos y persistir alucinaciones. Sin embargo, como secuencias consecutivas usan las mismas reglas de la SEP, implementamos **Context Caching de Gemini**. La IA mantiene las reglas de la SEP en su memoria de corto plazo, lo que reduce el tiempo de generación a milisegundos y **baja el costo de tokens en un 80%**, haciendo que el negocio sea sumamente rentable."*
+
+---
+
 ## 🚨 Respuestas Estratégicas ante Preguntas Difíciles
 
 ### 1. "Las IAs alucinan. ¿Cómo aseguramos que las lecciones de matemáticas enseñen sumas correctas?"
