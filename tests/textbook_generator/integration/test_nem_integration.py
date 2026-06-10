@@ -166,7 +166,8 @@ def test_export_conaliteg_format(db_session):
     ))
     
     # Run the export use case
-    use_case = ExportConalitegFormatUseCase(repo)
+    nem_repo = SQLiteNEMRepository(db_session)
+    use_case = ExportConalitegFormatUseCase(repo, nem_repo)
     result = use_case.execute(book.id)
     
     assert result["metadata_sep"]["libro_id"] == book.id
