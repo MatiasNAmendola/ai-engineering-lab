@@ -334,13 +334,11 @@ class EduTextApp {
         }).join('');
     }
 
-    viewBookInLibrary(bookId) {
+    async viewBookInLibrary(bookId) {
         this.switchView('reader-view');
-        // Let selector update first
-        setTimeout(() => {
-            this.bookSelector.value = bookId;
-            this.loadBookDetails(bookId);
-        }, 100);
+        await this.populateLibrarySelector();
+        this.bookSelector.value = bookId;
+        this.loadBookDetails(bookId);
     }
 
     async handleCreateBook() {
