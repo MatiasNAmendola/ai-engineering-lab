@@ -34,7 +34,20 @@ Cada secuencia didáctica generada pasa por la auditoría de un agente **LLM-as-
 *   **ADR-003: Estrategia de Caching en Producción**: No cacheamos lecciones completas para garantizar la diversidad didáctica entre escuelas y evitar la persistencia de alucinaciones. En su lugar, implementamos **LLM Prompt Caching (Context Caching en Gemini)** para mantener en memoria los tokens de lineamientos curriculares en el servidor de inferencia del LLM, ahorrando hasta un 80% en costos de llamadas de red.
 *   **ADR-004: Alineación NEM/SEP vía Integración de Campos Formativos**: Introducimos una capa de integración NEM con entidades de dominio de primera clase (`CampoFormativo`, `EjeArticulador`, `FaseAprendizaje`, PDA) y un `NEMAgentService` como puerto separado (ISP). Los campos NEM son opcionales, manteniendo compatibilidad con el workflow por asignatura. ([ADR-004 completo](../wiki/11_adr_004_nem_integration.md))
 
-### 5. Alineación NEM/SEP (Nueva Escuela Mexicana)
+### 5. Principios de Diseño SOLID
+La base de código está diseñada bajo principios de ingeniería orientados a la mantenibilidad y desacoplamiento:
+*   **SRP (Single Responsibility Principle)**: Cada caso de uso en `application/` encapsula un único proceso de negocio (e.g., `ExportConalitegFormatUseCase` se encarga exclusivamente de dar formato de exportación, abstrayéndose de la inferencia y almacenamiento).
+*   **OCP (Open/Closed Principle)**: El sistema permite la extensión sin modificar código núcleo existente. La integración NEM se logró añadiendo campos opcionales a `Secuencia` e inyectando un nuevo servicio, sin romper la generación curricular por materias tradicional.
+*   **LSP (Liskov Substitution Principle)**: Los adaptadores de infraestructura (`SQLiteNEMRepository`) implementan sus puertos (`NEMRepository`) garantizando que puedan sustituirse transparentemente (por ejemplo, por un mock in-memory en tests) sin alterar el comportamiento esperado.
+*   **ISP (Interface Segregation Principle)**: Segregamos el puerto de agentes NEM (`NEMAgentService`) del servicio estándar de generación de materias (`TextbookAgentService`). Los clientes del servicio tradicional no se ven obligados a conocer firmas o lógica de alineación curricular específica de la NEM mexicana.
+*   **DIP (Dependency Inversion Principle)**: Las capas de alto nivel (`application/`) dependen estrictamente de abstracciones (`domain/repositories.py` y `domain/services.py`), no de implementaciones concretas de infraestructura (SQLAlchemy o PydanticAI). Las dependencias son inyectadas en tiempo de ejecución.
+
+### 6. Simplicidad Operativa (KISS & YAGNI)
+*   **KISS (Keep It Simple, Stupid)**: Preferimos loops secuenciales simples y deterministas de Python para la generación jerárquica del libro (Libro -> Trimestre -> Secuencia) en lugar de orquestar un complejo e impredecible grafo cíclico de LangGraph. Del mismo modo, evitamos la sobrecarga de un motor vectorial externo en favor de búsquedas estructuradas en base relacional local (SQLite).
+*   **YAGNI (You Aren't Gonna Need It)**: No se crearon abstracciones especulativas ni envoltorios sobre APIs de IA para "futura flexibilidad". Cada línea de código responde a un requerimiento de negocio activo.
+
+### 7. Alineación NEM/SEP (Nueva Escuela Mexicana)
+
 
 El sistema incluye una capa de integración completa con el modelo curricular de la **Secretaría de Educación Pública**:
 
