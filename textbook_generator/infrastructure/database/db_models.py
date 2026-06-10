@@ -1,7 +1,7 @@
 from datetime import datetime
 from sqlalchemy import Column, Integer, String, Float, DateTime, ForeignKey, Enum as SQLEnum, JSON, Text
 from sqlalchemy.orm import declarative_base, relationship
-from ...domain.models import GenerationStatus, CampoFormativo, FaseAprendizaje
+from ...domain.models import GenerationStatus, CampoFormativo, EjeArticulador, FaseAprendizaje
 
 Base = declarative_base()
 
@@ -102,6 +102,19 @@ class DBSecuencia(Base):
 
     trimestre = relationship("DBTrimestre", back_populates="secuencias")
     lessons = relationship("DBLesson", back_populates="secuencia", cascade="all, delete-orphan")
+    ejes_transversales = relationship("DBEjeArticuladorTransversal", back_populates="secuencia", cascade="all, delete-orphan")
+
+
+class DBEjeArticuladorTransversal(Base):
+    __tablename__ = "ejes_articuladores_transversales"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    secuencia_id = Column(Integer, ForeignKey("secuencias.id"), nullable=False)
+    eje = Column(SQLEnum(EjeArticulador), nullable=False)
+    grado_profundidad = Column(String, nullable=False, default="menciona")
+    descripcion_integracion = Column(Text, nullable=False, default="")
+
+    secuencia = relationship("DBSecuencia", back_populates="ejes_transversales")
 
 
 class DBLesson(Base):

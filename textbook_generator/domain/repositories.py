@@ -3,7 +3,7 @@ from typing import List, Optional
 from .models import (
     Textbook, Trimestre, Secuencia, Lesson, CurricularRequirement, GenerationStatus,
     CampoFormativo, FaseAprendizaje, ContenidoProgramaSintetico,
-    ProcesoDesarrolloAprendizaje, ContextoLocal
+    ProcesoDesarrolloAprendizaje, ContextoLocal, EjeArticuladorTransversal
 )
 
 
@@ -114,4 +114,16 @@ class NEMRepository(ABC):
 
     @abstractmethod
     def get_pda(self, pda_id: int) -> Optional[ProcesoDesarrolloAprendizaje]:
+        pass
+
+    @abstractmethod
+    def save_eje_articulador(self, data: EjeArticuladorTransversal) -> EjeArticuladorTransversal:
+        pass
+
+    @abstractmethod
+    def get_ejes_by_secuencia(self, secuencia_id: int) -> List[EjeArticuladorTransversal]:
+        pass
+
+    @abstractmethod
+    def delete_ejes_by_secuencia(self, secuencia_id: int) -> None:
         pass

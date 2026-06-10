@@ -77,6 +77,14 @@ class ContextoLocal(BaseModel):
     proyectos_sugeridos: List[str] = Field(default_factory=list, description="Proyectos sugeridos por el docente")
 
 
+class EjeArticuladorTransversal(BaseModel):
+    id: Optional[int] = None
+    secuencia_id: int = Field(..., description="FK a la Secuencia")
+    eje: EjeArticulador = Field(..., description="Eje articulador transversal")
+    grado_profundidad: str = Field("menciona", description="menciona | desarrolla | transversal")
+    descripcion_integracion: str = Field("", description="Cómo se integra este eje en la secuencia")
+
+
 class Lesson(BaseModel):
     id: Optional[int] = None
     secuencia_id: int = Field(..., description="ID of the parent pedagogical sequence")

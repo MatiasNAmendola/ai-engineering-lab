@@ -3,12 +3,14 @@ from sqlalchemy.orm import Session, joinedload
 from ...domain.models import (
     Textbook, Trimestre, Secuencia, Lesson, CurricularRequirement, GenerationStatus,
     CampoFormativo, EjeArticulador, FaseAprendizaje,
-    ContenidoProgramaSintetico, ProcesoDesarrolloAprendizaje, ContextoLocal
+    ContenidoProgramaSintetico, ProcesoDesarrolloAprendizaje, ContextoLocal,
+    EjeArticuladorTransversal
 )
 from ...domain.repositories import TextbookRepository, RequirementRepository, NEMRepository
 from .db_models import (
     DBTextbook, DBTrimestre, DBSecuencia, DBLesson, DBCurricularRequirement,
-    DBContenidoProgramaSintetico, DBProcesoDesarrolloAprendizaje, DBContextoLocal
+    DBContenidoProgramaSintetico, DBProcesoDesarrolloAprendizaje, DBContextoLocal,
+    DBEjeArticuladorTransversal
 )
 
 
@@ -101,6 +103,13 @@ def to_domain_textbook(db_b: DBTextbook) -> Textbook:
         id=db_b.id, title=db_b.title, subject=db_b.subject, grade=db_b.grade,
         status=db_b.status, created_at=db_b.created_at, trimestres=trimestres,
         fase=fase, contexto_local=contexto
+    )
+
+
+def to_domain_eje_articulador_transversal(db_e: DBEjeArticuladorTransversal) -> EjeArticuladorTransversal:
+    return EjeArticuladorTransversal(
+        id=db_e.id, secuencia_id=db_e.secuencia_id, eje=db_e.eje,
+        grado_profundidad=db_e.grado_profundidad, descripcion_integracion=db_e.descripcion_integracion
     )
 
 
@@ -368,3 +377,26 @@ class SQLiteNEMRepository(NEMRepository):
         if not db_p:
             return None
         return to_domain_pda(db_p)
+
+    def save_eje_articulador(self, data: EjeArticuladorTransversal) -> EjeArticuladorTransversal:
+        db_e = DBEjeArticuladorTransversal(
+            secuencia_id=data.secuencia_id, eje=data.eje,
+            grado_profundidad=data.grado_profundidad,
+            descripcion_integracion=data.descripcion_integracion
+        )
+        self.session.add(db_e)
+        self.session.commit()
+        self.session.refresh(db_e)
+        return to_domain_eje_articulador_transversal(db_e)
+
+    def get_ejes_by_secuencia(self, secuencia_id: int) -> List[EjeArticuladorTransversal]:
+        db_es = self.session.query(DBEjeArticuladorTransversal).filter(
+            DBEjeArticuladorTransversal.secuencia_id == secuencia_id
+        ).all()
+        return [to_domain_eje_articulador_transversal(e) for e in db_es]
+
+    def delete_ejes_by_secuencia(self, secuencia_id: int) -> None:
+        self.session.query(DBEjeArticuladorTransversal).filter(
+            DBEjeArticuladorTransversal.secuencia_id == secuencia_id
+        ).delete()
+        self.session.commit()

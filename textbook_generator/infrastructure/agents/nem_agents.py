@@ -54,13 +54,13 @@ Devuelve scores de 0.0 a 1.0 para cobertura PDA y ejes articuladores.
 """
 
 
-class PydanticNEMAgentService(NEMAgentService):
+class NEMOutlineAgentService(NEMAgentService):
     def __init__(self):
         self.api_key = os.environ.get("GEMINI_API_KEY")
         self.use_live = bool(self.api_key)
 
         if self.use_live:
-            logger.info("Initializing PydanticNEMAgentService in LIVE mode")
+            logger.info("Initializing NEMOutlineAgentService in LIVE mode")
             self.outline_agent = Agent(
                 "google-gla:gemini-1.5-pro",
                 output_type=NEMBookOutline,
@@ -72,7 +72,7 @@ class PydanticNEMAgentService(NEMAgentService):
                 system_prompt=NEM_PDA_EVAL_SYSTEM_PROMPT
             )
         else:
-            logger.warning("No GEMINI_API_KEY found. PydanticNEMAgentService in OFFLINE MOCK mode.")
+            logger.warning("No GEMINI_API_KEY found. NEMOutlineAgentService in OFFLINE MOCK mode.")
 
     def generate_nem_outline(
         self,

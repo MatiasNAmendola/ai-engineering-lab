@@ -18,7 +18,7 @@ from ..database.sqlite_repository import (
     SQLiteTextbookRepository, SQLiteRequirementRepository, SQLiteNEMRepository
 )
 from ..agents.pydantic_agents import PydanticTextbookAgentService
-from ..agents.nem_agents import PydanticNEMAgentService
+from ..agents.nem_agents import NEMOutlineAgentService
 
 logger = logging.getLogger(__name__)
 
@@ -48,7 +48,7 @@ def get_agent_service():
 
 
 def get_nem_agent_service():
-    return PydanticNEMAgentService()
+    return NEMOutlineAgentService()
 
 
 class CreateTextbookRequest(BaseModel):
@@ -243,7 +243,7 @@ def evaluate_pda_alignment(
     secuencia_id: int,
     textbook_repo: SQLiteTextbookRepository = Depends(get_textbook_repo),
     nem_repo: SQLiteNEMRepository = Depends(get_nem_repo),
-    nem_agent_service: PydanticNEMAgentService = Depends(get_nem_agent_service)
+    nem_agent_service: NEMOutlineAgentService = Depends(get_nem_agent_service)
 ):
     try:
         use_case = EvaluatePDAAlignmentUseCase(textbook_repo, nem_repo, nem_agent_service)

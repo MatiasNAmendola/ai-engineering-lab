@@ -7,11 +7,11 @@ from textbook_generator.domain.models import (
     CampoFormativo, EjeArticulador, FaseAprendizaje,
     ContenidoProgramaSintetico, ProcesoDesarrolloAprendizaje, Secuencia, Lesson
 )
-from textbook_generator.infrastructure.agents.nem_agents import PydanticNEMAgentService
+from textbook_generator.infrastructure.agents.nem_agents import NEMOutlineAgentService
 
 
 def test_nem_agent_outline_mock():
-    service = PydanticNEMAgentService()
+    service = NEMOutlineAgentService()
     contenidos = [ContenidoProgramaSintetico(
         campo_formativo=CampoFormativo.LENGUAJES, fase=FaseAprendizaje.FASE_2,
         codigo="CF-LNG-F2-C01", descripcion="Expresa ideas mediante el lenguaje oral."
@@ -27,7 +27,7 @@ def test_nem_agent_outline_mock():
 
 
 def test_nem_agent_pda_eval_mock():
-    service = PydanticNEMAgentService()
+    service = NEMOutlineAgentService()
     secuencia = Secuencia(
         trimestre_id=1, number=1, title="El agua en mi comunidad", objectives="Analizar el uso del agua",
         lessons=[Lesson(secuencia_id=1, number=1, title="L1", section_inicio="I", section_desarrollo="D", section_cierre="C", activities="A")]
@@ -45,7 +45,7 @@ def test_nem_agent_pda_eval_mock():
 
 
 def test_nem_agent_all_campos():
-    service = PydanticNEMAgentService()
+    service = NEMOutlineAgentService()
     for campo in CampoFormativo:
         outline = service.generate_nem_outline(campo_formativo=campo, fase=FaseAprendizaje.FASE_2, contenidos=[])
         assert len(outline.trimestres) == 3
