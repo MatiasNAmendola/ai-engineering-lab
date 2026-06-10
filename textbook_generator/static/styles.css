@@ -1167,6 +1167,135 @@ h1, h2, h3, h4, h5, h6 {
     flex-grow: 1;
 }
 
+/* --- NEM Metadata Panel --- */
+.nem-metadata-panel {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--border-glass);
+    border-radius: var(--radius-md);
+    padding: 1.25rem;
+    margin-top: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+}
+
+.nem-field {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.nem-label {
+    font-family: var(--font-secondary);
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    min-width: 150px;
+}
+
+.campo-tag,
+.proyecto-tag {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    border-radius: 20px;
+    font-family: var(--font-secondary);
+}
+
+.campo-tags,
+.eje-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+}
+
+.campo-tag.campo-lenguajes {
+    background: rgba(59, 130, 246, 0.15);
+    color: #60a5fa;
+    border: 1px solid rgba(59, 130, 246, 0.25);
+}
+
+.campo-tag.campo-saberes-pcientifico {
+    background: rgba(16, 185, 129, 0.15);
+    color: #34d399;
+    border: 1px solid rgba(16, 185, 129, 0.25);
+}
+
+.campo-tag.campo-etica-naturaleza-sociedades {
+    background: rgba(245, 158, 11, 0.15);
+    color: #fbbf24;
+    border: 1px solid rgba(245, 158, 11, 0.25);
+}
+
+.campo-tag.campo-humano-comunitario {
+    background: rgba(168, 85, 247, 0.15);
+    color: #c084fc;
+    border: 1px solid rgba(168, 85, 247, 0.25);
+}
+
+.campo-tag.campo-default {
+    background: var(--primary-glass);
+    color: var(--primary-light);
+    border: 1px solid rgba(99, 102, 241, 0.25);
+}
+
+.eje-tag {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 10px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border-radius: 20px;
+    font-family: var(--font-secondary);
+    background: rgba(6, 182, 212, 0.12);
+    color: var(--info);
+    border: 1px solid rgba(6, 182, 212, 0.2);
+}
+
+.proyecto-tag {
+    background: rgba(245, 158, 11, 0.12);
+    color: #fbbf24;
+    border: 1px solid rgba(245, 158, 11, 0.2);
+    max-width: 100%;
+}
+
+/* --- NEM View --- */
+.nem-contents-container {
+    min-height: 200px;
+}
+
+.nem-content-item {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--border-glass);
+    padding: 1rem 1.25rem;
+    border-radius: var(--radius-md);
+    margin-bottom: 0.75rem;
+}
+
+.nem-content-item h4 {
+    font-size: 0.95rem;
+    color: var(--text-main);
+    margin-bottom: 0.35rem;
+}
+
+.nem-content-item p {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    line-height: 1.4;
+}
+
+.nem-content-item .nem-id {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--primary-light);
+    font-family: var(--font-secondary);
+}
+
 /* --- UTILITIES --- */
 .text-center { text-align: center; }
 .text-muted { color: var(--text-muted); }

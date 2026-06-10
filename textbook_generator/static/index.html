@@ -38,12 +38,15 @@
                     Cola de Revisión 
                     <span class="badge review-count-badge">0</span>
                 </a>
+                <a href="#" class="nav-link" data-target="nem-view">
+                    <i class="fa-solid fa-seedling"></i> Programa NEM
+                </a>
             </nav>
 
             <div class="sidebar-footer">
                 <div class="developer-info">
                     <p>Clean Architecture</p>
-                    <span>V1.0.0 (PydanticAI)</span>
+                    <span>V2.0.0 (NEM)</span>
                 </div>
                 <button class="seed-btn" id="seed-db-btn" title="Sembrar requisitos curriculares">
                     <i class="fa-solid fa-database"></i> Sembrar BD
@@ -272,6 +275,24 @@
                                         <strong id="active-score-age">0%</strong>
                                     </div>
                                 </div>
+                                <div class="nem-metadata-panel hidden" id="active-nem-panel">
+                                    <div class="nem-field">
+                                        <span class="nem-label">Campo Formativo:</span>
+                                        <span class="campo-tag" id="active-campo-formativo">---</span>
+                                    </div>
+                                    <div class="nem-field">
+                                        <span class="nem-label">Campos Vinculados:</span>
+                                        <div class="campo-tags" id="active-campos-vinculados"></div>
+                                    </div>
+                                    <div class="nem-field">
+                                        <span class="nem-label">Ejes Articuladores:</span>
+                                        <div class="eje-tags" id="active-ejes-articuladores"></div>
+                                    </div>
+                                    <div class="nem-field" id="active-proyecto-field">
+                                        <span class="nem-label">Proyecto:</span>
+                                        <span class="proyecto-tag" id="active-proyecto-vinculado">---</span>
+                                    </div>
+                                </div>
                                 <div class="regeneration-banner hidden" id="active-seq-feedback-panel">
                                     <p><strong>Comentarios / Justificación del Evaluador:</strong></p>
                                     <p class="feedback-text" id="active-seq-feedback-text"></p>
@@ -366,6 +387,21 @@
                                 </div>
                             </form>
                         </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- View: Programa NEM -->
+            <section id="nem-view" class="view-section">
+                <div class="section-card">
+                    <div class="card-header">
+                        <h2>Programa Sintético NEM - Fase 2</h2>
+                        <button class="btn btn-primary btn-sm" id="seed-nem-btn">
+                            <i class="fa-solid fa-database"></i> Sembrar Datos NEM
+                        </button>
+                    </div>
+                    <div class="nem-contents-container" id="nem-contents-display">
+                        <p class="text-muted text-center">Siembra los datos NEM para ver los contenidos y PDA.</p>
                     </div>
                 </div>
             </section>

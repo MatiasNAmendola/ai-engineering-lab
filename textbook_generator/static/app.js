@@ -64,6 +64,16 @@ class EduTextApp {
         this.consoleLessonsPreview = document.getElementById('console-lessons-preview-container');
         this.reviewFeedbackInput = document.getElementById('review-feedback-input');
         
+        // NEM Elements
+        this.nemPanel = document.getElementById('active-nem-panel');
+        this.nemCampoFormativo = document.getElementById('active-campo-formativo');
+        this.nemCamposVinculados = document.getElementById('active-campos-vinculados');
+        this.nemEjesArticuladores = document.getElementById('active-ejes-articuladores');
+        this.nemProyectoVinculado = document.getElementById('active-proyecto-vinculado');
+        this.nemProyectoField = document.getElementById('active-proyecto-field');
+        this.btnSeedNem = document.getElementById('seed-nem-btn');
+        this.nemContentsDisplay = document.getElementById('nem-contents-display');
+
         // Buttons
         this.btnApproveSeq = document.getElementById('btn-approve-seq');
         this.btnRejectSeq = document.getElementById('btn-reject-seq');
@@ -109,6 +119,9 @@ class EduTextApp {
         this.btnApproveSeq.addEventListener('click', () => this.handleReviewSubmit(true));
         this.btnRejectSeq.addEventListener('click', () => this.handleReviewSubmit(false));
         this.btnSeedDb.addEventListener('click', () => this.handleSeedDB());
+        if (this.btnSeedNem) {
+            this.btnSeedNem.addEventListener('click', () => this.handleSeedNEM());
+        }
         
         this.activeSeqRegenerateBtn.addEventListener('click', () => {
             if (this.activeSeq) {
@@ -151,7 +164,8 @@ class EduTextApp {
             'dashboard-view': ['Dashboard del Sistema', 'Monitoreo de generación y gobernanza de libros de texto'],
             'creator-view': ['Diseño de Libros de Texto', 'Inicia un nuevo proyecto escolar guiado por agentes cognitivos'],
             'reader-view': ['Biblioteca de Libros Generados', 'Explora las lecciones didácticas con estructura Inicio-Desarrollo-Cierre'],
-            'review-view': ['Consola de Human-in-the-Loop', 'Revisión y autorización de secuencias pedagógicas de primer grado']
+            'review-view': ['Consola de Human-in-the-Loop', 'Revisión y autorización de secuencias pedagógicas de primer grado'],
+            'nem-view': ['Programa Sintético NEM', 'Contenidos y Procesos de Desarrollo de Aprendizaje de la Nueva Escuela Mexicana']
         };
 
         if (titles[viewId]) {
@@ -450,6 +464,9 @@ class EduTextApp {
         this.activeScoreAlignment.innerText = alignScore;
         this.activeScoreAge.innerText = ageScore;
 
+        // Render NEM Metadata
+        this.renderNEMMetadata(seq);
+
         // Render review feedback or justification if any
         if (seq.review_feedback) {
             this.activeSeqFeedbackPanel.classList.remove('hidden');
@@ -710,6 +727,86 @@ class EduTextApp {
             }
         } catch (e) {
             this.showToast('Error al conectar con el servidor.', 'error');
+        }
+    }
+
+    // --- NEM (Nueva Escuela Mexicana) ---
+
+    renderNEMMetadata(seq) {
+        const hasCampo = seq.campo_formativo_principal;
+        const hasVinculados = seq.campos_formativos_vinculados && seq.campos_formativos_vinculados.length > 0;
+        const hasEjes = seq.ejes_articuladores && seq.ejes_articuladores.length > 0;
+        const hasProyecto = seq.proyecto_vinculado;
+
+        if (!hasCampo && !hasVinculados && !hasEjes && !hasProyecto) {
+            this.nemPanel.classList.add('hidden');
+            return;
+        }
+
+        this.nemPanel.classList.remove('hidden');
+
+        if (hasCampo) {
+            const cssClass = this.getCampoCSSClass(seq.campo_formativo_principal);
+            this.nemCampoFormativo.className = `campo-tag ${cssClass}`;
+            this.nemCampoFormativo.innerText = seq.campo_formativo_principal;
+        } else {
+            this.nemCampoFormativo.className = 'campo-tag';
+            this.nemCampoFormativo.innerText = '---';
+        }
+
+        if (hasVinculados) {
+            this.nemCamposVinculados.innerHTML = seq.campos_formativos_vinculados.map(c => {
+                const cssClass = this.getCampoCSSClass(c);
+                return `<span class="campo-tag ${cssClass}">${c}</span>`;
+            }).join('');
+        } else {
+            this.nemCamposVinculados.innerHTML = '';
+        }
+
+        if (hasEjes) {
+            this.nemEjesArticuladores.innerHTML = seq.ejes_articuladores.map(e =>
+                `<span class="eje-tag">${e}</span>`
+            ).join('');
+        } else {
+            this.nemEjesArticuladores.innerHTML = '';
+        }
+
+        if (hasProyecto) {
+            this.nemProyectoField.classList.remove('hidden');
+            this.nemProyectoVinculado.innerText = seq.proyecto_vinculado;
+        } else {
+            this.nemProyectoField.classList.remove('hidden');
+            this.nemProyectoVinculado.innerText = '---';
+        }
+    }
+
+    getCampoCSSClass(campo) {
+        if (!campo) return 'campo-default';
+        const c = campo.toLowerCase();
+        if (c.includes('lenguaje')) return 'campo-lenguajes';
+        if (c.includes('sabere') || c.includes('científic')) return 'campo-saberes-pcientifico';
+        if (c.includes('ética') || c.includes('naturaleza') || c.includes('sociedad')) return 'campo-etica-naturaleza-sociedades';
+        if (c.includes('humano') || c.includes('comunitari')) return 'campo-humano-comunitario';
+        return 'campo-default';
+    }
+
+    async handleSeedNEM() {
+        try {
+            this.btnSeedNem.disabled = true;
+            const res = await fetch(`${this.apiBase}/admin/nem/seed-fase2`, {
+                method: 'POST'
+            });
+            if (res.ok) {
+                const data = await res.json();
+                this.showToast(`Datos NEM sembrados: ${data.inserted || data.message || 'OK'}`, 'success');
+            } else {
+                const err = await res.json().catch(() => ({ detail: 'Error desconocido' }));
+                this.showToast(`Error al sembrar NEM: ${err.detail || 'Fallo en la operación'}`, 'error');
+            }
+        } catch (e) {
+            this.showToast('Error de conexión al sembrar datos NEM.', 'error');
+        } finally {
+            this.btnSeedNem.disabled = false;
         }
     }
 
